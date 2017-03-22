@@ -65,7 +65,7 @@ module.exports = function(environment) {
     'ember-api-feature-flags': {
       featureUrl: 'https://www.example.com/api/v1/features',
       featureKey: 'feature_key',
-      attributes: ['id', 'key', 'value'],
+      enabledKey: 'value',
       shouldMemoize: true,
       defaultValue: false
     }
@@ -103,9 +103,21 @@ This key is the key on your feature flag data object yielding the feature's name
 
 The value on this key will be normalized by the [`normalizeKey`](#normalizeKey) method.
 
-### `attributes {Array<string>} = ['id', 'key', 'value']`
+### `enabledKey {Boolean} = 'value'`
 
-This determines which keys to pick off of the feature flag data object. These values are then used by the `FeatureFlag` object (a wrapper around the single feature flag) when determining if a feature flag is enabled.
+This determines which key to pick off of the feature flag data object. This value is then used by the `FeatureFlag` object (a wrapper around the single feature flag) when determining if a feature flag is enabled.
+
+```js
+// example feature flag data object
+{
+  "id": 26,
+  "feature_key": "new_profile_page",
+  "key": "boolean",
+  "value": "true", // <-
+  "created_at": "2017-03-22T03:30:10.270Z",
+  "updated_at": "2017-03-22T03:30:10.270Z"
+}
+```
 
 ### `shouldMemoize {Boolean} = true`
 
@@ -144,16 +156,8 @@ let data = service.get('data');
 
 /**
   {
-    "newProfilePage": {
-      "id": 26,
-      "key": "boolean",
-      "value": "true"
-    },
-    "newFriendList": {
-      "id": 27,
-      "key": "boolean",
-      "value": "true"
-    }
+    "newProfilePage": { value: "true" },
+    "newFriendList": { value: "true" }
   }
 **/
 ```
@@ -168,7 +172,7 @@ Configure the service. You can use this method to change service options at runt
 service.configure({
   featureUrl: 'http://www.example.com/features',
   featureKey: 'feature_key',
-  attributes: ['id', 'key', 'value'],
+  enabledKey: 'value',
   shouldMemoize: true,
   defaultValue: false
 });

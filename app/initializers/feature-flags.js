@@ -26,7 +26,7 @@ const FEATURE_FLAG_DEFAULTS = {
    * @public
    * @property {Array<string>}
    */
-  attributes: ['id', 'key', 'value'],
+  attributes: ['id', 'value'],
 
   /**
    * If true, will cache FeatureFlag objects.
