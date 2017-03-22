@@ -1,8 +1,8 @@
 import Ember from 'ember';
 import config from '../config/environment';
+import pureAssign from 'ember-api-feature-flags/utils/pure-assign';
 
 const {
-  assign,
   assert,
   isNone,
   isPresent
@@ -21,12 +21,12 @@ const FEATURE_FLAG_DEFAULTS = {
   featureKey: 'feature_key',
 
   /**
-   * Attributes to pass to individual FeatureFlag objects.
+   * Feature value key on the response object.
    *
    * @public
-   * @property {Array<string>}
+   * @property {String}
    */
-  attributes: ['id', 'value'],
+  enabledKey: 'value',
 
   /**
    * If true, will cache FeatureFlag objects.
@@ -40,7 +40,7 @@ const FEATURE_FLAG_DEFAULTS = {
 export function initialize(application) {
   application.deferReadiness();
   let { 'ember-api-feature-flags': featureFlagsConfig } = config;
-  let options = assign({}, FEATURE_FLAG_DEFAULTS, featureFlagsConfig);
+  let options = pureAssign(FEATURE_FLAG_DEFAULTS, featureFlagsConfig);
   assert(`[ember-api-feature-flags] No feature URL found, please set one`, isPresent(options.featureUrl));
   let featureFlagService = application.__container__.lookup('service:feature-flags');
   if (isNone(featureFlagService)) {
