@@ -52,7 +52,7 @@ export default Component.extend({
 
 ## API fetch failure
 
-When the fetch fails, the service enters "error" mode. In this mode, feature flag lookups via HBS or JS will still function as normal. However, they will always return the default value set in the config (which defaults to `false`).
+When the fetch fails, the service enters "error" mode. In this mode, feature flag lookups via HBS or JS will still function as normal. However, they will always return the default value set in the config (which defaults to `false`). You can set this to `true` if you want all features to be enabled in event of fetch failure.
 
 ## Configuration
 
