@@ -1,5 +1,9 @@
-{{!-- The following component displays Ember's default welcome message. --}}
-{{welcome-page}}
-{{!-- Feel free to remove this! --}}
+<h1>My App</h1>
+
+{{#if featureFlags.secretMessage.isEnabled}}
+  <p id="secret-message">This is a secret message.</p>
+{{else}}
+  <p id="normal-message">This is a normal message.</p>
+{{/if}}
 
 {{outlet}}

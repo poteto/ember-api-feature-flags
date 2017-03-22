@@ -20,6 +20,14 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+    },
+
+    'ember-api-feature-flags': {
+      featureUrl: 'https://www.example.com/api/v1/features',
+      featureKey: 'key',
+      enabledKey: 'value',
+      shouldMemoize: true,
+      defaultValue: false
     }
   };
 
