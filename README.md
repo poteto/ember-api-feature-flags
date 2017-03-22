@@ -130,16 +130,16 @@ If the service is in error mode, all feature flag lookups will return this value
 ## API
 
 * Properties
-  + [`didFetchData`](#didFetchData)
+  + [`didFetchData`](#didfetchdata)
   + [`data`](#data)
 * Methods
   + [`configure`](#configure)
-  + [`fetchFeatures`](#fetchFeatures)
-  + [`receiveData`](#receiveData)
-  + [`receiveError`](#receiveError)
-  + [`normalizeKey`](#normalizeKey)
-  + [`get`](#unknownProperty)
-  + [`setupForTesting`](#setupForTesting)
+  + [`fetchFeatures`](#fetchfeatures)
+  + [`receiveData`](#receivedata)
+  + [`receiveError`](#receiveerror)
+  + [`normalizeKey`](#normalizekey)
+  + [`get`](#get)
+  + [`setupForTesting`](#setupfortesting)
 
 #### `didFetchData`
 
