@@ -18,7 +18,7 @@ const {
 const SERVICE_OPTIONS = [
   'featureUrl',
   'featureKey',
-  'attributes',
+  'enabledKey',
   'shouldMemoize',
   'defaultValue'
 ];
@@ -274,7 +274,7 @@ export default Service.extend({
   _normalizeData(data, featureKey = get(this, 'featureKey')) {
     return data.reduce((acc, d) => {
       let normalizedKey = this.normalizeKey(d[featureKey]);
-      acc[normalizedKey] = pick(d, get(this, 'attributes'));
+      acc[normalizedKey] = pick(d, [get(this, 'enabledKey')]);
       return acc;
     }, {});
   }

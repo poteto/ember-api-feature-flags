@@ -52,8 +52,3 @@ test('computed - #isDisabled - when false as string', function(assert) {
   let featureFlag = FeatureFlag.create({ data: { key: 'boolean', value: 'false' } });
   assert.ok(featureFlag.get('isDisabled'), 'should be disabled');
 });
-
-test('when type is not handled', function(assert) {
-  let featureFlag = FeatureFlag.create({ data: { key: 'foobar', value: false } });
-  assert.throws(() => featureFlag.get('isEnabled'), 'should throw error');
-});

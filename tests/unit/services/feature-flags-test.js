@@ -2,10 +2,11 @@ import Ember from 'ember';
 import { moduleFor, test } from 'ember-qunit';
 
 const { typeOf } = Ember;
+const { keys } = Object;
 const defaultOptions = {
   featureUrl: 'http://www.example.com/features',
   featureKey: 'feature_key',
-  attributes: ['id', 'key', 'value'],
+  enabledKey: 'value',
   shouldMemoize: true,
   defaultValue: false
 };
@@ -22,16 +23,14 @@ test('#configure should set options on service', function(assert) {
   let options = {
     featureUrl: 'http://www.example.com/features',
     featureKey: 'key',
-    attributes: ['a', 'b', 'c'],
+    enabledKey: 'value',
     shouldMemoize: true,
     defaultValue: false
   };
   service.configure(options);
-  assert.equal(service.get('featureUrl'), options.featureUrl, 'should set option');
-  assert.equal(service.get('featureKey'), options.featureKey, 'should set option');
-  assert.deepEqual(service.get('attributes'), options.attributes, 'should set option');
-  assert.equal(service.get('shouldMemoize'), options.shouldMemoize, 'should set option');
-  assert.equal(service.get('defaultValue'), options.defaultValue, 'should set option');
+  keys(options).forEach((k) => {
+    assert.equal(service.get(k), options[k], 'should set option');
+  });
 });
 
 test('#fetchFeatures', function(assert) {
@@ -78,7 +77,7 @@ test('computed - #data', function(assert) {
     .receiveData([
       { 'feature_key': 'foo_bar', key: 'boolean', value: true }
     ]);
-  assert.deepEqual(service.get('data'), { fooBar: { key: 'boolean', value: true } }, 'should normalize data');
+  assert.deepEqual(service.get('data'), { fooBar: { value: true } }, 'should normalize data');
 });
 
 test('#normalizeKey', function(assert) {

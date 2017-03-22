@@ -3,10 +3,9 @@ import Ember from 'ember';
 const {
   Object: EmberObject,
   computed: { readOnly, not, bool },
-  run: { bind },
   computed,
-  assert,
   get,
+  isPresent,
   typeOf
 } = Ember;
 
@@ -36,7 +35,6 @@ export default EmberObject.extend({
   defaultValue: false,
 
   hasData: bool('data'),
-  type: readOnly('data.key'),
   value: readOnly('data.value'),
 
   /**
@@ -46,21 +44,15 @@ export default EmberObject.extend({
    * @readonly
    * @returns {Boolean}
    */
-  isEnabled: computed('isRelay', 'type', 'value', function() {
+  isEnabled: computed('isRelay', 'hasData', 'value', 'defaultValue', function() {
     let isRelay = get(this, 'isRelay');
     let hasData = get(this, 'hasData');
     let defaultValue = get(this, 'defaultValue');
-
     if (isRelay || !hasData) {
       return defaultValue;
     }
-
-    let handlers = get(this, 'handlers');
-    let type = get(this, 'type');
-    let value = get(this, 'value');
-    let handler = get(handlers, type);
-    assert(`[ember-api-feature-flags] No FeatureFlag handler for ${type}`, typeOf(handler) === 'function');
-    return bind(this, handler)(value) || defaultValue;
+    let value = this._normalize(get(this, 'value'));
+    return isPresent(value) ? value : defaultValue;
   }).readOnly(),
 
   /**
@@ -72,12 +64,10 @@ export default EmberObject.extend({
    */
   isDisabled: not('isEnabled').readOnly(),
 
-  handlers: {
-    boolean(value) {
-      if (typeOf(value) === 'string') {
-        return value === 'true';
-      }
-      return !!value;
+  _normalize(value) {
+    if (typeOf(value) === 'string') {
+      return value === 'true';
     }
+    return !!value;
   }
 });
