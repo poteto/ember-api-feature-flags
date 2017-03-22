@@ -149,7 +149,7 @@ Returns a boolean value that represents the success state of fetching data from 
 
 #### `data`
 
-A computed property that represents the normalized feature flag data. Depending on your `attributes` config, this will look like:
+A computed property that represents the normalized feature flag data.
 
 ```js
 let data = service.get('data');
