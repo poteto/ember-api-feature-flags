@@ -103,7 +103,7 @@ This key is the key on your feature flag data object yielding the feature's name
 
 The value on this key will be normalized by the [`normalizeKey`](#normalizeKey) method.
 
-### `enabledKey {Boolean} = 'value'`
+### `enabledKey {String} = 'value'`
 
 This determines which key to pick off of the feature flag data object. This value is then used by the `FeatureFlag` object (a wrapper around the single feature flag) when determining if a feature flag is enabled.
 
