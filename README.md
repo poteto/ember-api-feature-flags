@@ -1,4 +1,4 @@
-# ember-api-feature-flags ![Download count all time](https://img.shields.io/npm/dt/ember-api-feature-flags.svg) [![CircleCI](https://circleci.com/gh/poteto/ember-api-feature-flags.svg?style=shield)](https://circleci.com/gh/poteto/ember-api-feature-flags) [![npm version](https://badge.fury.io/js/ember-api-feature-flags.svg)](https://badge.fury.io/js/ember-api-feature-flags) [![Ember Observer Score](http://emberobserver.com/badges/ember-api-feature-flags.svg)](http://emberobserver.com/addons/ember-api-feature-flags)
+# ember-api-feature-flags ![Download count all time](https://img.shields.io/npm/dt/ember-api-feature-flags.svg) [![Build Status](https://travis-ci.org/poteto/ember-api-feature-flags.svg?branch=master)](https://travis-ci.org/poteto/ember-api-feature-flags) [![npm version](https://badge.fury.io/js/ember-api-feature-flags.svg)](https://badge.fury.io/js/ember-api-feature-flags) [![Ember Observer Score](http://emberobserver.com/badges/ember-api-feature-flags.svg)](http://emberobserver.com/addons/ember-api-feature-flags)
 
 API based, read-only feature flags for Ember. To install:
 
