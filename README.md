@@ -227,12 +227,13 @@ service.configure({
 
 **[⬆️ back to top](#api)**
 
-#### `fetchFeatures {String} = featureUrl`
+#### `fetchFeatures {Object} = options`
 
-Performs the GET request to the specified URL. If no value is passed in, it will use the `featureUrl` set in the service. Returns a Promise.
+Performs the GET request to the specified URL, with optional headers to be passed to `ember-ajax`. Returns a Promise.
 
 ```js
 service.fetchFeatures().then((data) => doStuff(data));
+service.fetchFeatures({ headers: /* ... */}).then((data) => doStuff(data));
 ```
 
 **[⬆️ back to top](#api)**
