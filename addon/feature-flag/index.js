@@ -5,6 +5,7 @@ const {
   computed: { readOnly, not, bool },
   computed,
   get,
+  setProperties,
   isPresent,
   typeOf
 } = Ember;
@@ -36,6 +37,35 @@ export default EmberObject.extend({
 
   hasData: bool('data'),
   value: readOnly('data.value'),
+
+  init() {
+    this._super(...arguments);
+    let { isDeferred } = this;
+    if (isDeferred) {
+      this.__listenForData__();
+    }
+  },
+
+  /**
+   * When service is deferred, listen for the trigger so that we can get the
+   * updated data from the service.
+   *
+   * @private
+   * @returns {Void}
+   */
+  __listenForData__() {
+    let service = get(this, '__service__');
+    let featureFlag = this;
+    service.on('didFetchData', function() {
+      let service = this;
+      let key = get(featureFlag, '__key__');
+      let data = get(service, `data.${key}`);
+      setProperties(featureFlag, {
+        data,
+        isRelay: false
+      });
+    });
+  },
 
   /**
    * Is the `FeatureFlag` enabled?

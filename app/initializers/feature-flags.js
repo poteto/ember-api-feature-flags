@@ -9,7 +9,18 @@ const {
 } = Ember;
 const FEATURE_FLAG_DEFAULTS = {
   /**
+   * If true, will not automatically fetch feature flags.
+   *
+   * @public
+   * @property {Boolean}
+   */
+  isDeferred: false,
+
+  /**
    * Feature API endpoint.
+   *
+   * @public
+   * @property {String}
    */
   featureUrl: undefined,
   /**
@@ -46,12 +57,18 @@ export function initialize(application) {
   if (isNone(featureFlagService)) {
     return;
   }
-  featureFlagService
-    .configure(options)
-    .fetchFeatures()
-    .then((data) => featureFlagService.receiveData(data))
-    .catch((reason) => featureFlagService.receiveError(reason))
-    .finally(() => application.advanceReadiness());
+
+  featureFlagService.configure(options);
+
+  if (!options.isDeferred) {
+    featureFlagService
+      .fetchFeatures()
+      .then((data) => featureFlagService.receiveData(data))
+      .catch((reason) => featureFlagService.receiveError(reason))
+      .finally(() => application.advanceReadiness());
+  } else {
+    application.advanceReadiness();
+  }
 }
 
 export default {

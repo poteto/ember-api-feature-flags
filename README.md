@@ -65,6 +65,7 @@ module.exports = function(environment) {
     'ember-api-feature-flags': {
       featureUrl: 'https://www.example.com/api/v1/features',
       featureKey: 'feature_key',
+      isDeferred: false,
       enabledKey: 'value',
       shouldMemoize: true,
       defaultValue: false
@@ -74,6 +75,48 @@ module.exports = function(environment) {
 ```
 
 `featureUrl` **must** be defined, or `ember-api-feature-flags` will not be able to fetch feature flag data from your API.
+
+## Deferring feature flag fetching
+
+You can defer the automatic API feature flag fetch by setting the `isDeferred` flag in the config options to `true`.
+
+```js
+/* eslint-env node */
+module.exports = function(environment) {
+  var ENV = {
+    'ember-api-feature-flags': {
+      isDeferred: true,
+      // ...
+    }
+  }
+  return ENV;
+```
+
+This means that you will have to tell the service to fetch feature flags instead. For example, this is useful when you want to make sure that the feature flag request has auth headers attached to it. In the following example, the application uses `ember-simple-auth`, and the `authenticated` data includes the user's `email` and `token`:
+
+```js
+import Ember from 'ember';
+import Session from 'ember-simple-auth/services/session';
+
+const {
+  inject: { service },
+  get
+} = Ember;
+
+export default Session.extend({
+  featureFlags: service(),
+
+  // call this function after the session is authenticated
+  fetchFeatureFlags() {
+    let featureFlags = get(this, 'featureFlags');
+    let { authenticated: { email, token } } = get(this, 'data');
+    let headers = { Authorization: `Token token=${token}, email=${email}`};
+    featureFlags
+      .fetchFeatures({ headers })
+      .then((data) => featureFlags.receiveData(data))
+      .catch((reason) => featureFlags.receiveError(reason));
+  }
+```
 
 ### `featureUrl* {String}`
 
@@ -126,6 +169,10 @@ By default, the service will instantiate and cache `FeatureFlag` objects. Set th
 ### `defaultValue {Boolean} = false`
 
 If the service is in error mode, all feature flag lookups will return this value as their `isEnabled` value.
+
+### `isDeferred {Boolean} = false`
+
+If enabled, the installed initializer will not do an automatic API fetch. You will have to call the service's `fetchFeatures` method yourself.
 
 ## API
 
