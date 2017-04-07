@@ -1,5 +1,8 @@
+import Ember from 'ember';
 import FeatureFlag from 'ember-api-feature-flags/feature-flag';
 import { module, test } from 'qunit';
+
+const { Evented, Object: EmberObject } = Ember;
 
 module('Unit | Utility | feature flag');
 
@@ -51,4 +54,21 @@ test('computed - #isDisabled - when false', function(assert) {
 test('computed - #isDisabled - when false as string', function(assert) {
   let featureFlag = FeatureFlag.create({ data: { key: 'boolean', value: 'false' } });
   assert.ok(featureFlag.get('isDisabled'), 'should be disabled');
+});
+
+test('when deferred - should listen for `didFetchData`', function(assert) {
+  let DummyService = EmberObject.extend(Evented, {
+    data: { foo: { key: 'boolean', value: 'true' } },
+    do(eventName) { this.trigger(eventName); }
+  });
+  let service = DummyService.create();
+  let featureFlag = FeatureFlag.create({
+    isDeferred: true,
+    __service__: service,
+    __key__: 'foo',
+    data: { key: 'boolean', value: 'false' }
+  });
+  assert.ok(featureFlag.get('isDisabled'), 'precondition - should be disabled');
+  service.do('didFetchData');
+  assert.ok(featureFlag.get('isEnabled'), 'should be enabled');
 });

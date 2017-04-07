@@ -7,6 +7,7 @@ const defaultOptions = {
   featureUrl: 'http://www.example.com/features',
   featureKey: 'feature_key',
   enabledKey: 'value',
+  isDeferred: false,
   shouldMemoize: true,
   defaultValue: false
 };

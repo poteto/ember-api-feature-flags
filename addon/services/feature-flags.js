@@ -2,10 +2,12 @@ import Ember from 'ember';
 import request from 'ember-ajax/request';
 import FeatureFlag from 'ember-api-feature-flags/feature-flag';
 import pick from 'ember-api-feature-flags/utils/pick';
+import pureAssign from 'ember-api-feature-flags/utils/pure-assign';
 
 const {
   String: { camelize },
   RSVP: { resolve },
+  Evented,
   Service,
   computed,
   assert,
@@ -16,6 +18,7 @@ const {
   typeOf
 } = Ember;
 const SERVICE_OPTIONS = [
+  'isDeferred',
   'featureUrl',
   'featureKey',
   'enabledKey',
@@ -23,7 +26,12 @@ const SERVICE_OPTIONS = [
   'defaultValue'
 ];
 
-export default Service.extend({
+export default Service.extend(Evented, {
+  /**
+   * Boolean status reflecting if the fetch from the API is deferred.
+   */
+  isDeferred: false,
+
   /**
    * Boolean status reflecting success or failure of fetching data.
    *
@@ -86,14 +94,15 @@ export default Service.extend({
    *
    * @public
    * @async
-   * @param {String} [url=get(this, 'featureUrl')]
+   * @param {Object} [options={}] Options to pass to ember-ajax
    * @returns {Promise}
    */
-  fetchFeatures(url = get(this, 'featureUrl')) {
+  fetchFeatures(options = {}) {
+    let url = get(this, 'featureUrl');
     if (get(this, '__testing__')) {
       return resolve(true);
     }
-    return request(url);
+    return request(url, options);
   },
 
   /**
@@ -109,7 +118,9 @@ export default Service.extend({
     if (!isValid) {
       return this.receiveError('Empty data received');
     }
-    return setProperties(this, { _data: data, didFetchData: true });
+    let values = setProperties(this, { _data: data, didFetchData: true });
+    this.trigger('didFetchData');
+    return values;
   },
 
   /**
@@ -206,7 +217,11 @@ export default Service.extend({
    * @returns {FeatureFlag}
    */
   _handleTest() {
-    return FeatureFlag.create({ isRelay: true, defaultValue: true });
+    return this._createFeatureFlag(null, {
+      isDeferred: false,
+      isRelay: true,
+      defaultValue: true
+    });
   },
 
   /**
@@ -221,7 +236,10 @@ export default Service.extend({
   _handleSuccess(key, shouldMemoize = get(this, 'shouldMemoize')) {
     let data = get(this, 'data');
     let defaultValue = get(this, 'defaultValue');
-    let featureFlag = FeatureFlag.create({ defaultValue, data: get(data, key) });
+    let featureFlag = this._createFeatureFlag(key, {
+      defaultValue,
+      data: get(data, key)
+    });
     return shouldMemoize ? this._memoize(key, featureFlag) : featureFlag;
   },
 
@@ -236,8 +254,27 @@ export default Service.extend({
    */
   _handleFailed(key, shouldMemoize = get(this, 'shouldMemoize')) {
     let defaultValue = get(this, 'defaultValue');
-    let featureFlag = FeatureFlag.create({ defaultValue, isRelay: true });
+    let featureFlag = this._createFeatureFlag(key, {
+      defaultValue,
+      isRelay: true
+    });
     return shouldMemoize ? this._memoize(key, featureFlag) : featureFlag;
+  },
+
+  /**
+   * Creates a new FeatureFlag instance with default options.
+   *
+   * @param {String} key
+   * @param {Object} [opts={}]
+   * @returns
+   */
+  _createFeatureFlag(key, opts = {}) {
+    let defaultOpts = {
+      __key__: key,
+      __service__: this,
+      isDeferred: get(this, 'isDeferred')
+    };
+    return FeatureFlag.create(pureAssign(defaultOpts, opts));
   },
 
   /**
