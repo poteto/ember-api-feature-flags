@@ -3,6 +3,7 @@ import request from 'ember-ajax/request';
 import FeatureFlag from 'ember-api-feature-flags/feature-flag';
 import pick from 'ember-api-feature-flags/utils/pick';
 import pureAssign from 'ember-api-feature-flags/utils/pure-assign';
+import config from 'ember-get-config';
 
 const {
   String: { camelize },
@@ -17,21 +18,48 @@ const {
   setProperties,
   typeOf
 } = Ember;
+const { 'ember-api-feature-flags': featureFlagsConfig, environment } = config;
 const SERVICE_OPTIONS = [
-  'isDeferred',
   'featureUrl',
   'featureKey',
   'enabledKey',
   'shouldMemoize',
   'defaultValue'
 ];
+const FEATURE_FLAG_DEFAULTS = {
+  /**
+   * Feature API endpoint.
+   *
+   * @public
+   * @property {String}
+   */
+  featureUrl: undefined,
+  /**
+   * Feature key name on the response object.
+   *
+   * @public
+   * @property {String}
+   */
+  featureKey: 'feature_key',
+
+  /**
+   * Feature value key on the response object.
+   *
+   * @public
+   * @property {String}
+   */
+  enabledKey: 'value',
+
+  /**
+   * If true, will cache FeatureFlag objects.
+   *
+   * @public
+   * @property {Boolean}
+   */
+  shouldMemoize: true
+};
 
 export default Service.extend(Evented, {
-  /**
-   * Boolean status reflecting if the fetch from the API is deferred.
-   */
-  isDeferred: false,
-
   /**
    * Boolean status reflecting success or failure of fetching data.
    *
@@ -63,6 +91,16 @@ export default Service.extend(Evented, {
    * @property {Boolean}
    */
   __testing__: false,
+
+  init() {
+    this._super(...arguments);
+    let options = pureAssign(FEATURE_FLAG_DEFAULTS, featureFlagsConfig);
+    assert(`[ember-api-feature-flags] No feature URL found, please set one`, isPresent(options.featureUrl));
+    this.configure(options);
+    if (environment === 'test') {
+      this.setupForTesting();
+    }
+  },
 
   /**
    * Set options on the FeatureFlags service.
@@ -166,7 +204,7 @@ export default Service.extend(Evented, {
     let didFetchData = get(this, 'didFetchData');
     let isTesting = get(this, '__testing__');
     if (isTesting) {
-      return this._handleTest();
+      return this._handleTest(keyForFeature);
     }
     if (didFetchData) {
       return this._handleSuccess(keyForFeature);
@@ -216,9 +254,8 @@ export default Service.extend(Evented, {
    * @public
    * @returns {FeatureFlag}
    */
-  _handleTest() {
-    return this._createFeatureFlag(null, {
-      isDeferred: false,
+  _handleTest(key) {
+    return this._createFeatureFlag(key, {
       isRelay: true,
       defaultValue: true
     });
@@ -271,8 +308,7 @@ export default Service.extend(Evented, {
   _createFeatureFlag(key, opts = {}) {
     let defaultOpts = {
       __key__: key,
-      __service__: this,
-      isDeferred: get(this, 'isDeferred')
+      __service__: this
     };
     return FeatureFlag.create(pureAssign(defaultOpts, opts));
   },

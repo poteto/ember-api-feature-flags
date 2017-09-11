@@ -7,7 +7,6 @@ const defaultOptions = {
   featureUrl: 'http://www.example.com/features',
   featureKey: 'feature_key',
   enabledKey: 'value',
-  isDeferred: false,
   shouldMemoize: true,
   defaultValue: false
 };
@@ -99,6 +98,7 @@ test('#unknownProperty - when `didFetchData` is true', function(assert) {
 
 test('#unknownProperty - when `didFetchData` is false', function(assert) {
   let service = this.subject();
+  service.__testing__ = false;
   service
     .configure(defaultOptions)
     .receiveError('it failed');

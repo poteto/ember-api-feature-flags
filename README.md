@@ -8,9 +8,29 @@ ember install ember-api-feature-flags
 
 ## How it works
 
-`ember-api-feature-flags` installs an initializer into your app. This initializer will fire when your app boots, fetching your feature flag data from a specified URL.
+`ember-api-feature-flags` installs a service into your app. This service will let you [fetch your feature flag data](#fetching-feature-flags) from a specified URL.
 
-Once fetched, inject the `featureFlags` service, then easily check if a given feature is enabled/disabled in both Handlebars:
+For example, call `fetchFeatures` in your application route:
+
+```js
+// application/route.js
+import Ember from 'ember';
+
+const { inject: { Service }, Route } = Ember;
+
+export default Route.extend({
+  featureFlags: service(),
+
+  beforeModel() {
+    this.get('featureFlags')
+      .fetchFeatures()
+      .then((data) => featureFlags.receiveData(data))
+      .catch((reason) => featureFlags.receiveError(reason));
+  }
+});
+```
+
+Once fetched, you can then easily check if a given feature is enabled/disabled in both Handlebars:
 
 ```hbs
 {{#if featureFlags.myFeature.isEnabled}}
@@ -65,7 +85,6 @@ module.exports = function(environment) {
     'ember-api-feature-flags': {
       featureUrl: 'https://www.example.com/api/v1/features',
       featureKey: 'feature_key',
-      isDeferred: false,
       enabledKey: 'value',
       shouldMemoize: true,
       defaultValue: false
@@ -76,23 +95,32 @@ module.exports = function(environment) {
 
 `featureUrl` **must** be defined, or `ember-api-feature-flags` will not be able to fetch feature flag data from your API.
 
-## Deferring feature flag fetching
+## Fetching feature flags
 
-You can defer the automatic API feature flag fetch by setting the `isDeferred` flag in the config options to `true`.
+### Unauthenticated
+
+For example, call `fetchFeatures` in your application route:
 
 ```js
-/* eslint-env node */
-module.exports = function(environment) {
-  var ENV = {
-    'ember-api-feature-flags': {
-      isDeferred: true,
-      // ...
-    }
+// application/route.js
+import Ember from 'ember';
+
+const { inject: { Service }, Route } = Ember;
+
+export default Route.extend({
+  featureFlags: service(),
+
+  beforeModel() {
+    this.get('featureFlags')
+      .fetchFeatures()
+      .then((data) => featureFlags.receiveData(data))
+      .catch((reason) => featureFlags.receiveError(reason));
   }
-  return ENV;
+});
 ```
 
-This means that you will have to tell the service to fetch feature flags instead. For example, this is useful when you want to make sure that the feature flag request has auth headers attached to it. In the following example, the application uses `ember-simple-auth`, and the `authenticated` data includes the user's `email` and `token`:
+### Authenticated
+In the following example, the application uses `ember-simple-auth`, and the `authenticated` data includes the user's `email` and `token`:
 
 ```js
 import Ember from 'ember';
@@ -169,10 +197,6 @@ By default, the service will instantiate and cache `FeatureFlag` objects. Set th
 ### `defaultValue {Boolean} = false`
 
 If the service is in error mode, all feature flag lookups will return this value as their `isEnabled` value.
-
-### `isDeferred {Boolean} = false`
-
-If enabled, the installed initializer will not do an automatic API fetch. You will have to call the service's `fetchFeatures` method yourself.
 
 ## API
 
