@@ -40,10 +40,7 @@ export default EmberObject.extend({
 
   init() {
     this._super(...arguments);
-    let { isDeferred } = this;
-    if (isDeferred) {
-      this.__listenForData__();
-    }
+    this.__listenForData__();
   },
 
   /**
@@ -55,6 +52,9 @@ export default EmberObject.extend({
    */
   __listenForData__() {
     let service = get(this, '__service__');
+    if (service === undefined) {
+      return;
+    }
     let featureFlag = this;
     service.on('didFetchData', function() {
       let service = this;
