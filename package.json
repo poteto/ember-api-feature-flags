@@ -1,6 +1,6 @@
 {
   "name": "ember-api-feature-flags",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "API based, read-only feature flags for Ember",
   "keywords": [
     "ember-addon",
