@@ -1,7 +1,6 @@
-import Ember from 'ember';
+import { typeOf } from '@ember/utils';
 import { moduleFor, test } from 'ember-qunit';
 
-const { typeOf } = Ember;
 const { keys } = Object;
 const defaultOptions = {
   featureUrl: 'http://www.example.com/features',

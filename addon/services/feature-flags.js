@@ -1,23 +1,16 @@
-import Ember from 'ember';
+import { camelize } from '@ember/string';
+import { resolve } from 'rsvp';
+import Evented from '@ember/object/evented';
+import Service from '@ember/service';
+import { assert } from '@ember/debug';
+import { setProperties, set, get, computed } from '@ember/object';
+import { typeOf, isPresent } from '@ember/utils';
 import request from 'ember-ajax/request';
 import FeatureFlag from 'ember-api-feature-flags/feature-flag';
 import pick from 'ember-api-feature-flags/utils/pick';
 import pureAssign from 'ember-api-feature-flags/utils/pure-assign';
 import config from 'ember-get-config';
 
-const {
-  String: { camelize },
-  RSVP: { resolve },
-  Evented,
-  Service,
-  computed,
-  assert,
-  get,
-  set,
-  isPresent,
-  setProperties,
-  typeOf
-} = Ember;
 const { 'ember-api-feature-flags': featureFlagsConfig, environment } = config;
 const SERVICE_OPTIONS = [
   'featureUrl',
@@ -82,7 +75,7 @@ export default Service.extend(Evented, {
    * @private
    * @property {Object}
    */
-  _cache: {},
+  _cache: null,
 
   /**
    * Test mode status.
@@ -94,6 +87,7 @@ export default Service.extend(Evented, {
 
   init() {
     this._super(...arguments);
+    this._cache = {};
     let options = pureAssign(FEATURE_FLAG_DEFAULTS, featureFlagsConfig);
     assert(`[ember-api-feature-flags] No feature URL found, please set one`, isPresent(options.featureUrl));
     this.configure(options);
