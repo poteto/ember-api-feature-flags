@@ -1,11 +1,9 @@
-import Ember from 'ember';
+import { assign } from '@ember/polyfills';
 
-const { merge } = Ember;
-const assign = Ember.assign || Object.assign || _assign;
-
-function _assign(origin, ...sources) {
-  return sources.reduce((acc, source) => merge(acc, source), merge({}, origin));
-}
+// not really sure what this was doing - eslint reporting nas not used
+// function _assign(origin, ...sources) {
+//   return sources.reduce((acc, source) => merge(acc, source), merge({}, origin));
+// }
 
 export default function pureAssign() {
   return assign({}, ...arguments);

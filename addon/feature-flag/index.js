@@ -1,14 +1,10 @@
-import Ember from 'ember';
-
-const {
-  Object: EmberObject,
-  computed: { readOnly, not, bool },
-  computed,
-  get,
+import { bool, not, readOnly } from '@ember/object/computed';
+import EmberObject, {
   setProperties,
-  isPresent,
-  typeOf
-} = Ember;
+  get,
+  computed
+} from '@ember/object';
+import { typeOf, isPresent } from '@ember/utils';
 
 /**
  * A small object that represents a feature flag and its `type` and `value`.

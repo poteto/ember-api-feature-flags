@@ -1,6 +1,5 @@
-import Ember from 'ember';
-
-const { get, isNone } = Ember;
+import { get } from '@ember/object';
+import { isNone } from '@ember/utils';
 
 /**
  * Pick specific key/value pairs off an object. Returns new array.
