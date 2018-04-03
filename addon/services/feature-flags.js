@@ -1,23 +1,16 @@
-import Ember from 'ember';
+import { camelize } from '@ember/string';
+import { resolve } from 'rsvp';
+import Evented from '@ember/object/evented';
+import Service from '@ember/service';
+import { assert } from '@ember/debug';
+import { setProperties, set, get, computed } from '@ember/object';
+import { typeOf, isPresent } from '@ember/utils';
 import request from 'ember-ajax/request';
 import FeatureFlag from 'ember-api-feature-flags/feature-flag';
 import pick from 'ember-api-feature-flags/utils/pick';
 import pureAssign from 'ember-api-feature-flags/utils/pure-assign';
 import config from 'ember-get-config';
 
-const {
-  String: { camelize },
-  RSVP: { resolve },
-  Evented,
-  Service,
-  computed,
-  assert,
-  get,
-  set,
-  isPresent,
-  setProperties,
-  typeOf
-} = Ember;
 const { 'ember-api-feature-flags': featureFlagsConfig, environment } = config;
 const SERVICE_OPTIONS = [
   'featureUrl',
